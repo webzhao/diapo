@@ -84,7 +84,7 @@ Line ends with `|->` will be joined with next line. For example:
 will be transformed to:
 
 ```markdown
-This is a very long title
+# This is a very long title
 ```
 
 #### Font zooming
