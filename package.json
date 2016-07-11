@@ -1,0 +1,40 @@
+{
+  "name": "diapo",
+  "version": "1.0.0",
+  "description": "Diapo - The HTML5 Presentation Framework.",
+  "main": "dist/diapo.js",
+  "scripts": {
+    "test": "python -m SimpleHTTPServer",
+    "watch": "npm run  rollup & npm run postcss",
+    "rollup": "rollup -c -w",
+    "postcss": "postcss --use postcss-import --use postcss-cssnext -o dist/diapo.css src/styles/main.css -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.coding.net:webzhao/slides.git"
+  },
+  "keywords": [
+    "slides",
+    "presentation"
+  ],
+  "author": "webzhao@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "markdown-it": "^6.1.0",
+    "prismjs": "^1.5.1",
+    "yaml": "^0.3.0"
+  },
+  "devDependencies": {
+    "http-server": "^0.9.0",
+    "postcss": "^5.0.21",
+    "postcss-cli": "^2.5.2",
+    "postcss-cssnext": "^2.6.0",
+    "postcss-import": "^8.1.2",
+    "rollup": "^0.32.0",
+    "rollup-plugin-commonjs": "^3.0.0",
+    "rollup-plugin-node-resolve": "^1.7.0",
+    "rollup-plugin-postcss": "^0.1.1",
+    "rollup-watch": "^2.4.0",
+    "serve-static": "^1.11.1"
+  }
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name=viewport content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Diapo test</title>
+    <link rel="stylesheet" href="../dist/diapo.css">
+    <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+      #diapo {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="diapo"></div>
+    <script src="../dist/diapo.js"></script>
+    <script>
+      const contentUrl = 'contents/sample-slides/slides.md';
+      fetch(contentUrl).then(res => res.text()).then(md => new Diapo({
+        content: md,
+        el: '#diapo'
+      }));
+    </script>
+  </body>
+</html>

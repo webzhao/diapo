@@ -1,0 +1,134 @@
+html {
+  font-size: 1.11vw;
+}
+.diapo-container {
+  overflow-x: hidden;
+  position: relative;
+  height: 100vh;
+}
+.diapo-slide {
+  display: none;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  text-align: center;
+  transition: all .8s cubic-bezier(0.26, 0.86, 0.44, 0.985);
+  transform: translate3d(0, 0, 0);
+  padding: 3rem 5em;
+  &.prev, &.current, &.next {
+    display: flex;
+  }
+  &.prev {
+    transform: translate3d(-100%, 0, 0);
+  }
+  &.current {
+    opacity: 1;
+  }
+  &.next {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+.diapo-content {
+  font-size: 2rem;
+  margin: auto;
+  &>* {
+    text-align: left;
+  }
+  & ul, & ol {
+    display: inline-block;
+    padding-left: 1em;
+  }
+  & li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.2;
+  }
+  & p {
+    line-height: 1.7;
+  }
+  & code {
+    font-size: 1.6rem;
+    line-height: 1.2;
+  }
+  & code[class*="language-"], & pre[class*="language-"] {
+    line-height: 1.2;
+  }
+  & h1, & h2, & h3, & h4 {
+    margin-top: 0;
+    margin-bottom: .5em;
+    text-align: center;
+    white-space: nowrap;
+  }
+  & h1 {
+    font-size: 3.6rem;
+  }
+  & h2 {
+    font-size: 2.8rem;
+  }
+  & h3 {
+    font-size: 2.2rem;
+  }
+  & h4 {
+    font-size: 2rem;
+  }
+  & table {
+    width: 100%;
+    & th, & td {
+      padding: 0.5em;
+    }
+  }
+  & iframe:not([width]) {
+    width: 90vw;
+  }
+  & iframe:not([height]) {
+    height: 90vh;
+  }
+}
+
+/**
+ * for mobile
+ */
+@media screen and (max-width: 720px) {
+  html {
+    font-size: 8px;
+  }
+  .diapo-content {
+    & h1, & h2, & h3, & h4 {
+      white-space: normal;
+    }
+  }
+}
+
+/**
+ * for larger screen
+ */
+@media screen and (min-width: 1920px) {
+  html {
+    font-size: 22px;
+  }
+}
+
+/**
+ * portraits warning message
+ */
+@media screen and (max-width: 720px) and (orientation: portrait) {
+  body::after {
+    content: 'View it in landscape mode.';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    line-height: 100vh;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    text-align: center;
+    font-size: 3vh;
+  }
+}
+
+

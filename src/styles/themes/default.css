@@ -1,0 +1,26 @@
+@import "../../../node_modules/prismjs/themes/prism-okaidia.css";
+
+:root {
+  --screen-color: #333;
+  --text-color: #eee;
+  --heading-font-family: Helvetica, Sans-Serif;
+  --link-color: #8bc34a;
+  --highlight-color: #ffc107;
+  --code-font-family: monospace;
+}
+.diapo-container {
+  background: var(--screen-color);
+}
+.diapo-content {
+  color: var(--text-color);
+  & h1, & h2, & h3, & h4 {
+    font-weight: normal;
+    font-family: var(--heading-font-family);
+  }
+  & a {
+    color: var(--link-color);
+  }
+  & code {
+    font-family: var(--code-font-family);
+  }
+}
