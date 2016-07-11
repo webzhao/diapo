@@ -6,15 +6,15 @@ Diapo.js is a framework which transform markdown to web-based presentation.
 
 ## Features
 
-[*] Markdown content
-[*] Plugins
-[*] Syntax highlighting
-[ ] Theming
-[ ] Transition
-[ ] Fragment
-[ ] Remote Control and Notes
-[ ] Print
-[ ] Scopped Style
+- [x] Markdown content
+- [x] Plugins
+- [x] Syntax highlighting
+- [ ] Theming
+- [ ] Transition
+- [ ] Fragment
+- [ ] Remote Control and Notes
+- [ ] Print
+- [ ] Scopped Style
 
 ## Usage
 
@@ -22,7 +22,6 @@ Diapo.js is a framework which transform markdown to web-based presentation.
 <div id="container"></div>
 
 <script type="text/diapo" id="content">
-
 # My cool presentation
 ### by webzhao
 
@@ -36,7 +35,6 @@ Diapo.js is a framework which transform markdown to web-based presentation.
 ---
 
 ## Thank you!
-
 </script>
 
 <script src="path/to/diapo.js"></script>
