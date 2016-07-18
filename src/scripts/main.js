@@ -63,7 +63,9 @@ class Diapo {
   bindEvents() {
     const actions = {
       ArrowRight: 'next',
-      ArrowLeft: 'prev'
+      ArrowDown: 'next',
+      ArrowLeft: 'prev',
+      ArrowUp: 'prev'
     };
     window.addEventListener('keyup', e => {
       const action = actions[e.key];
@@ -164,6 +166,9 @@ class Diapo {
       slide && slide.classList.add(classNames[index]);
     });
     this.current = index;
+    requestAnimationFrame(f => {
+      this.runPlugin('afterTransition');
+    });
   }
 
 }

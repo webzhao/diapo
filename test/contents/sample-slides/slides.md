@@ -13,7 +13,15 @@
 
 ---
 
-iframe(src="http://matrix.qiwoo.org/")
+```javascript
+if (a === 1) {
+  console.log(a)
+} else if (a != 2) {
+  const f = x => x+1;
+} else if (a <=3) {
+  function(...a) {}
+}
+```
 
 ---
 
@@ -138,6 +146,8 @@ display: table-header-group   /* <thead>     */
 
 ## display: table 浏览器支持
 
+<<|-|-|
+
 - :fa-internet-explorer: 8+
 - :fa-firefox:
 - :fa-chrome:
@@ -145,6 +155,8 @@ display: table-header-group   /* <thead>     */
 - :fa-safari:
 - :fa-apple:
 - :fa-android:
+
+|>>
 
 ---
 
@@ -205,6 +217,8 @@ Flexbox是W3C布局方面标准中的*终极武器*
 
 ## Flexbox浏览器支持(2009标准)
 
+<<|-|-|
+
 - :fa-internet-explorer: 10+
 - :fa-firefox:
 - :fa-chrome:
@@ -213,9 +227,13 @@ Flexbox是W3C布局方面标准中的*终极武器*
 - :fa-apple:
 - :fa-android: 2.1+
 
+|>>
+
 ---
 
 ## Flexbox浏览器支持(2012标准)
+
+<<|-|-|
 
 - :fa-internet-explorer: 11+
 - :fa-firefox: 22+
@@ -224,6 +242,8 @@ Flexbox是W3C布局方面标准中的*终极武器*
 - :fa-safari: 6.1+
 - :fa-apple: 7.0+
 - :fa-android: 4.4+
+
+|>>
 
 ---
 
@@ -242,6 +262,8 @@ Flexbox是W3C布局方面标准中的*终极武器*
 
 ## 多列显示浏览器支持
 
+<<|-|-|
+
 - :fa-internet-explorer: 10+
 - :fa-firefox:
 - :fa-chrome:
@@ -249,6 +271,8 @@ Flexbox是W3C布局方面标准中的*终极武器*
 - :fa-safari:
 - :fa-apple:
 - :fa-android:
+
+|>>
 
 ---
 
@@ -280,7 +304,7 @@ Flexbox是W3C布局方面标准中的*终极武器*
 
 ---
 
-## CSS Region浏览器支持
+## CSS Region 浏览器支持
 
 - :fa-internet-explorer: 10+
 - :fa-safari: 6.1+
@@ -337,12 +361,16 @@ Flexbox是W3C布局方面标准中的*终极武器*
 
 ## 总结
 
+<<|-|-|
+
 * box-sizing
 * display: table
 * flexbox
 * multiple column
 * css region
 * css shape
+
+|>>
 
 ---
 

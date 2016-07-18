@@ -1,0 +1,15 @@
+@import "../../../node_modules/prismjs/themes/prism-okaidia.css";
+@import "./base.css";
+
+:root {
+  --screen-color: #263238;
+  --text-color: #CDD3DE;
+  --heading-font-family: 'fzltxhjw', Helvetica, Sans-Serif;
+  --text-font-family: 'fzltxhjw', Helvetica, Sans-Serif;
+  --link-color: #C3E88D;
+  --highlight-color: #ff5370;
+  --code-font-family: 'firacode', monospace;
+}
+
+@custom-selector :--theme .theme-material;
+

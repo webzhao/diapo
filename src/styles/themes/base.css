@@ -1,0 +1,24 @@
+:--theme .diapo-container {
+  background: var(--screen-color);
+  & progress[value]::-webkit-progress-value {
+    background: var(--link-color);
+  }
+}
+.diapo-content {
+  color: var(--text-color);
+  font-family: var(--text-font-family);
+  & h1, & h2, & h3, & h4 {
+    font-weight: normal;
+    font-family: var(--heading-font-family);
+  }
+  & a {
+    color: var(--link-color);
+  }
+  & code {
+    font-family: var(--code-font-family);
+  }
+}
+
+:not(pre) > code[class*="language-"], pre[class*="language-"] {
+  background: var(--screen-color);
+}

@@ -46,6 +46,18 @@ export const fontZoom = {
 };
 
 /**
+ * two column layout
+ */
+export const twoColumn = {
+  beforeParse(diapo) {
+    const pattern1 = /<<\|-\|-\|/g;
+    const pattern2 = /\|>>(?=\s+)/mg;
+    diapo.content = diapo.content.replace(pattern1, '<span class="two-column">')
+      .replace(pattern2, '</span>');
+  }
+};
+
+/**
  * iframe
  */
 export const iframe = {
@@ -53,6 +65,21 @@ export const iframe = {
     const pattern = /iframe\(([^\)]+)\)/ig;
     const template = '<iframe frameborder="0" $1></iframe>';
     diapo.content = diapo.content.replace(pattern, template);
+  }
+};
+
+/**
+ * progress bar
+ */
+export const progress = {
+  afterRender(diapo) {
+    const progress = document.createElement('progress');
+    progress.max = 1;
+    diapo.container.appendChild(progress);
+  },
+  afterTransition(diapo) {
+    const progress = diapo.container.querySelector('progress');
+    progress.value = (diapo.current + 1) / diapo.slides.length;
   }
 };
 

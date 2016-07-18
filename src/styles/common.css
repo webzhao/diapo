@@ -1,3 +1,38 @@
+@font-face {
+  font-family: 'fzlthjw'; /* 方正兰亭黑简体 */
+  src: url(http://s3.qhimg.com/static/bca0a7160eaf5421/fzlthjw.woff) format('woff2');
+}
+
+@font-face {
+  font-family: 'fzltxhjw'; /* 方正兰亭细黑简体 */
+  src: url(http://s4.qhimg.com/static/3530dda20ca73723/fzltxhjw.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'fzltcxhjw'; /* 方正兰亭超细黑简体 */
+  src: url(http://s4.qhimg.com/static/af9b945c57d79aee/fzltcxhjw.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'fzzxhjw'; /* 方正正纤黑简体 */
+  src: url(http://s4.qhimg.com/static/4d2c31c78735ac1e/fzzxhjw.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'fzltyjt'; /* 方正兰亭圆简体 */
+  src: url(http://s3.qhimg.com/static/7154115610ccd102/fzltyjt.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'hyg2gjm'; /* 汉仪中等线简 */
+  src: url(http://s3.qhimg.com/static/d272e20145ecf6b4/hyg2gjm.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'firacode'; /* FiraCode */
+  src: url(http://s4.qhimg.com/static/35cefbb4cf65bfcb/FiraCode-Regular.woff2) format('woff2');
+}
+
 html {
   font-size: 1.11vw;
 }
@@ -5,6 +40,21 @@ html {
   overflow-x: hidden;
   position: relative;
   height: 100vh;
+  & progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0.3rem;
+    min-height: 3px;
+    max-height: 8px;
+    appearence: none;
+    -webkit-appearance: none;
+    border: none;
+  }
+  & progress[value]::-webkit-progress-value {
+    transition: width 0.5s ease;
+  }
 }
 .diapo-slide {
   display: none;
@@ -45,9 +95,16 @@ html {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
     line-height: 1.2;
+    & p {
+      margin: 0;
+    }
   }
   & p {
     line-height: 1.7;
+  }
+  & img {
+    max-width: 80vw;
+    max-height: 80vh;
   }
   & code {
     font-size: 1.6rem;
@@ -74,10 +131,22 @@ html {
   & h4 {
     font-size: 2rem;
   }
+  & em {
+    text-emphasis-style: dot;
+    text-emphasis-position: under right;
+    font-style: normal;
+  }
   & table {
     width: 100%;
     & th, & td {
       padding: 0.5em;
+    }
+  }
+  & a {
+    text-decoration: none;
+    border-bottom: 0.07em solid transparent;
+    &:hover {
+      border-color: currentColor;
     }
   }
   & iframe:not([width]) {
@@ -85,6 +154,16 @@ html {
   }
   & iframe:not([height]) {
     height: 90vh;
+  }
+  & .two-column {
+    display: inline-block;
+    column-count: 2;
+    column-gap: 5em;
+    margin-top: 1em;
+    & ul, & ol {
+      display: block;
+      margin-top: 0;
+    }
   }
 }
 

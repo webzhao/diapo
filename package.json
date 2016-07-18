@@ -7,7 +7,7 @@
     "test": "python -m SimpleHTTPServer",
     "watch": "npm run  rollup & npm run postcss",
     "rollup": "rollup -c -w",
-    "postcss": "postcss --use postcss-import --use postcss-cssnext -o dist/diapo.css src/styles/main.css -w"
+    "postcss": "postcss -u postcss-import -u postcss-cssnext -u postcss-custom-selectors -o dist/diapo.css src/styles/main.css -w"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,9 @@
     "postcss": "^5.0.21",
     "postcss-cli": "^2.5.2",
     "postcss-cssnext": "^2.6.0",
+    "postcss-custom-selectors": "^3.0.0",
     "postcss-import": "^8.1.2",
+    "postcss-namespace": "^1.1.1",
     "rollup": "^0.32.0",
     "rollup-plugin-commonjs": "^3.0.0",
     "rollup-plugin-node-resolve": "^1.7.0",

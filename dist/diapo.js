@@ -8987,6 +8987,18 @@
 	};
 
 	/**
+	 * two column layout
+	 */
+	const twoColumn = {
+	  beforeParse(diapo) {
+	    const pattern1 = /<<\|-\|-\|/g;
+	    const pattern2 = /\|>>(?=\s+)/mg;
+	    diapo.content = diapo.content.replace(pattern1, '<span class="two-column">')
+	      .replace(pattern2, '</span>');
+	  }
+	};
+
+	/**
 	 * iframe
 	 */
 	const iframe = {
@@ -8997,6 +9009,21 @@
 	  }
 	};
 
+	/**
+	 * progress bar
+	 */
+	const progress = {
+	  afterRender(diapo) {
+	    const progress = document.createElement('progress');
+	    progress.max = 1;
+	    diapo.container.appendChild(progress);
+	  },
+	  afterTransition(diapo) {
+	    const progress = diapo.container.querySelector('progress');
+	    progress.value = (diapo.current + 1) / diapo.slides.length;
+	  }
+	};
+
 
 
 	var plugins = Object.freeze({
@@ -9004,7 +9031,9 @@
 	  fontawesome: fontawesome,
 	  pipeline: pipeline,
 	  fontZoom: fontZoom,
-	  iframe: iframe
+	  twoColumn: twoColumn,
+	  iframe: iframe,
+	  progress: progress
 	});
 
 	const classNames = ['prev', 'current', 'next'];
@@ -9066,7 +9095,9 @@
 	  bindEvents() {
 	    const actions = {
 	      ArrowRight: 'next',
-	      ArrowLeft: 'prev'
+	      ArrowDown: 'next',
+	      ArrowLeft: 'prev',
+	      ArrowUp: 'prev'
 	    };
 	    window.addEventListener('keyup', e => {
 	      const action = actions[e.key];
@@ -9167,6 +9198,9 @@
 	      slide && slide.classList.add(classNames[index]);
 	    });
 	    this.current = index;
+	    requestAnimationFrame(f => {
+	      this.runPlugin('afterTransition');
+	    });
 	  }
 
 	}
