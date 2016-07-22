@@ -3,6 +3,7 @@ import {parse} from './parser';
 import * as plugins from './plugins';
 
 const classNames = ['prev', 'current', 'next'];
+const userPlugins = {};
 
 export default Diapo;
 
@@ -21,7 +22,7 @@ class Diapo {
 
     // parse
     this.runPlugin('beforeParse');
-    this.parse();
+    Object.assign(this, parse(this.content));
     this.runPlugin('afterParse');
 
     // render
@@ -40,13 +41,6 @@ class Diapo {
   initContainer(el) {
     this.container = $(el || 'body');
     this.container.classList.add('diapo-container');
-  }
-
-  /**
-   * parse markdown to html
-   */
-  parse() {
-    this.html = parse(this.content).html;
   }
 
   /**
@@ -69,37 +63,24 @@ class Diapo {
     };
     window.addEventListener('keyup', e => {
       const action = actions[e.key];
-      action && this[action]() && e.preventDefault();
+      action && this.transition(action) && e.preventDefault();
     });
-    // touch screen support
-    if ('ontouchstart' in window) {
-      let startX, startTime, endX;
-      const ontouchstart = e => {
-        startX = e.touches[0].pageX;
-        startTime = +new Date();
-        window.addEventListener('touchmove', ontouchmove);
-      };
-      const ontouchmove = e => {
-        endX = e.touches[0].pageX;
-      };
-      const ontouchend = e => {
-        window.removeEventListener('touchmove', ontouchmove);
-        const duration = +new Date() - startTime;
-        const distance = endX - startX;
-        if (Math.abs(distance) > 30 && duration < 800) {
-          this[distance > 0 ? 'prev' : 'next']();
-        }
-      };
-      window.addEventListener('touchstart', ontouchstart);
-      window.addEventListener('touchend', ontouchend);
-      window.addEventListener('touchcancel', ontouchend);
-    }
+  }
+
+  /**
+   * transition to next/prev page
+   */
+  transition(dir) {
+    const result = this.runPlugin('beforeTransition', dir);
+    if (result.filter(r => r === false).length) return;
+    this[dir]();
   }
 
   /**
    * get plugins
    */
   getPlugins() {
+    Object.assign(plugins, userPlugins);
     return Object.keys(plugins).map(name => {
       plugins[name].name = name;
       return plugins[name];
@@ -110,9 +91,9 @@ class Diapo {
    * run plugins at specified phase
    * @param phase (beforeParse|afterParse|afterRender)
    */
-  runPlugin(phase) {
-    this.plugins.forEach(p => {
-      typeof p[phase] === 'function' &&p[phase].call(this, this);
+  runPlugin(phase, ...params) {
+    return this.plugins.map(p => {
+      if (typeof p[phase] === 'function') return p[phase].call(this, this, ...params);
     });
   }
 
@@ -131,7 +112,8 @@ class Diapo {
   /**
    * add plugin
    */
-  static addPlugin(plugin) {
+  static addPlugin(name, plugin) {
+    userPlugins[name] = plugin;
   }
 
   /**
@@ -167,6 +149,9 @@ class Diapo {
     });
     this.current = index;
     requestAnimationFrame(f => {
+      [document.body, document.documentElement].forEach(e => {
+        e.scrollTop && (e.scrollTop = 0);
+      });
       this.runPlugin('afterTransition');
     });
   }

@@ -4,9 +4,10 @@
 :root {
   --screen-color: #272822;
   --text-color: #eee;
-  --heading-font-family: Helvetica, Sans-Serif;
+  --heading-font-family: 'fzltcxhjw', Helvetica, Sans-Serif;
+  --text-font-family: 'fzltcxhjw', Helvetica, Sans-Serif;
   --link-color: #8bc34a;
   --highlight-color: #ffc107;
-  --code-font-family: monospace;
+  --code-font-family: 'firaCode light', monospace;
 }
 

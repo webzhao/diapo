@@ -1,12 +1,14 @@
-:--theme .diapo-container {
+.diapo-container {
   background: var(--screen-color);
   & progress[value]::-webkit-progress-value {
     background: var(--link-color);
   }
 }
-.diapo-content {
+.diapo-slide {
   color: var(--text-color);
   font-family: var(--text-font-family);
+}
+.diapo-content {
   & h1, & h2, & h3, & h4 {
     font-weight: normal;
     font-family: var(--heading-font-family);

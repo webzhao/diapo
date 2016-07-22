@@ -7737,426 +7737,47 @@
 
 	var MarkdownIt = (markdownIt && typeof markdownIt === 'object' && 'default' in markdownIt ? markdownIt['default'] : markdownIt);
 
-	var yaml = createCommonjsModule(function (module, exports) {
-	// YAML - Core - Copyright TJ Holowaychuk <tj@vision-media.ca> (MIT Licensed)
-
-	/**
-	 * Version triplet.
-	 */
-
-	exports.version = '0.2.3'
-
-	// --- Helpers
-
-	/**
-	 * Return 'near "context"' where context
-	 * is replaced by a chunk of _str_.
-	 *
-	 * @param  {string} str
-	 * @return {string}
-	 * @api public
-	 */
-
-	function context(str) {
-	  if (typeof str !== 'string') return ''
-	  str = str
-	    .slice(0, 25)
-	    .replace(/\n/g, '\\n')
-	    .replace(/"/g, '\\\"')
-	  return 'near "' + str + '"'
-	}
-
-	// --- Lexer
-
-	/**
-	 * YAML grammar tokens.
-	 */
-
-	var tokens = [
-	  ['comment', /^#[^\n]*/],
-	  ['indent', /^\n( *)/],
-	  ['space', /^ +/],
-	  ['true', /^\b(enabled|true|yes|on)\b/],
-	  ['false', /^\b(disabled|false|no|off)\b/],
-	  ['null', /^\b(null|Null|NULL|~)\b/],
-	  ['string', /^"(.*?)"/],
-	  ['string', /^'(.*?)'/],
-	  ['timestamp', /^((\d{4})-(\d\d?)-(\d\d?)(?:(?:[ \t]+)(\d\d?):(\d\d)(?::(\d\d))?)?)/],
-	  ['float', /^(\d+\.\d+)/],
-	  ['int', /^(\d+)/],
-	  ['doc', /^---/],
-	  [',', /^,/],
-	  ['{', /^\{(?![^\n\}]*\}[^\n]*[^\s\n\}])/],
-	  ['}', /^\}/],
-	  ['[', /^\[(?![^\n\]]*\][^\n]*[^\s\n\]])/],
-	  [']', /^\]/],
-	  ['-', /^\-/],
-	  [':', /^[:]/],
-	  ['string', /^(?![^:\n\s]*:[^\/]{2})(([^:,\]\}\n\s]|(?!\n)\s(?!\s*?\n)|:\/\/|,(?=[^\n]*\s*[^\]\}\s\n]\s*\n)|[\]\}](?=[^\n]*\s*[^\]\}\s\n]\s*\n))*)(?=[,:\]\}\s\n]|$)/], 
-	  ['id', /^([\w][\w -]*)/]
-	]
-
-	/**
-	 * Tokenize the given _str_.
-	 *
-	 * @param  {string} str
-	 * @return {array}
-	 * @api private
-	 */
-
-	exports.tokenize = function (str) {
-	  var token, captures, ignore, input,
-	      indents = 0, lastIndents = 0,
-	      stack = [], indentAmount = -1
-
-	  // Windows new line support (CR+LF, \r\n)
-	  str = str.replace(/\r\n/g, "\n");
-
-	  while (str.length) {
-	    for (var i = 0, len = tokens.length; i < len; ++i)
-	      if (captures = tokens[i][1].exec(str)) {
-	        token = [tokens[i][0], captures],
-	        str = str.replace(tokens[i][1], '')
-	        switch (token[0]) {
-	          case 'comment':
-	            ignore = true
-	            break
-	          case 'indent':
-	            lastIndents = indents 
-	            // determine the indentation amount from the first indent
-	            if (indentAmount == -1) {
-	              indentAmount = token[1][1].length
-	            }
-
-	            indents = token[1][1].length / indentAmount
-	            if (indents === lastIndents)
-	              ignore = true
-	            else if (indents > lastIndents + 1)
-	              throw new SyntaxError('invalid indentation, got ' + indents + ' instead of ' + (lastIndents + 1))
-	            else if (indents < lastIndents) {
-	              input = token[1].input
-	              token = ['dedent']
-	              token.input = input
-	              while (--lastIndents > indents)
-	                stack.push(token)
-	            }
-	        }
-	        break
-	      }
-	    if (!ignore)
-	      if (token)
-	        stack.push(token),
-	        token = null
-	      else 
-	        throw new SyntaxError(context(str))
-	    ignore = false
-	  }
-	  return stack
-	}
-
-	// --- Parser
-
-	/**
-	 * Initialize with _tokens_.
-	 */
-
-	function Parser(tokens) {
-	  this.tokens = tokens
-	}
-
-	/**
-	 * Look-ahead a single token.
-	 *
-	 * @return {array}
-	 * @api public
-	 */
-
-	Parser.prototype.peek = function() {
-	  return this.tokens[0]
-	}
-
-	/**
-	 * Advance by a single token.
-	 *
-	 * @return {array}
-	 * @api public
-	 */
-
-	Parser.prototype.advance = function() {
-	  return this.tokens.shift()
-	}
-
-	/**
-	 * Advance and return the token's value.
-	 *
-	 * @return {mixed}
-	 * @api private
-	 */
-
-	Parser.prototype.advanceValue = function() {
-	  return this.advance()[1][1]
-	}
-
-	/**
-	 * Accept _type_ and advance or do nothing.
-	 *
-	 * @param  {string} type
-	 * @return {bool}
-	 * @api private
-	 */
-
-	Parser.prototype.accept = function(type) {
-	  if (this.peekType(type))
-	    return this.advance()
-	}
-
-	/**
-	 * Expect _type_ or throw an error _msg_.
-	 *
-	 * @param  {string} type
-	 * @param  {string} msg
-	 * @api private
-	 */
-
-	Parser.prototype.expect = function(type, msg) {
-	  if (this.accept(type)) return
-	  throw new Error(msg + ', ' + context(this.peek()[1].input))
-	}
-
-	/**
-	 * Return the next token type.
-	 *
-	 * @return {string}
-	 * @api private
-	 */
-
-	Parser.prototype.peekType = function(val) {
-	  return this.tokens[0] &&
-	         this.tokens[0][0] === val
-	}
-
-	/**
-	 * space*
-	 */
-
-	Parser.prototype.ignoreSpace = function() {
-	  while (this.peekType('space'))
-	    this.advance()
-	}
-
-	/**
-	 * (space | indent | dedent)*
-	 */
-
-	Parser.prototype.ignoreWhitespace = function() {
-	  while (this.peekType('space') ||
-	         this.peekType('indent') ||
-	         this.peekType('dedent'))
-	    this.advance()
-	}
-
-	/**
-	 *   block
-	 * | doc
-	 * | list
-	 * | inlineList
-	 * | hash
-	 * | inlineHash
-	 * | string
-	 * | float
-	 * | int
-	 * | true
-	 * | false
-	 * | null
-	 */
-
-	Parser.prototype.parse = function() {
-	  switch (this.peek()[0]) {
-	    case 'doc':
-	      return this.parseDoc()
-	    case '-':
-	      return this.parseList()
-	    case '{':
-	      return this.parseInlineHash()
-	    case '[':
-	      return this.parseInlineList()
-	    case 'id':
-	      return this.parseHash()
-	    case 'string':
-	      return this.advanceValue()
-	    case 'timestamp':
-	      return this.parseTimestamp()
-	    case 'float':
-	      return parseFloat(this.advanceValue())
-	    case 'int':
-	      return parseInt(this.advanceValue())
-	    case 'true':
-	      this.advanceValue(); return true
-	    case 'false':
-	      this.advanceValue(); return false
-	    case 'null':
-	      this.advanceValue(); return null
-	  }
-	}
-
-	/**
-	 * '---'? indent expr dedent
-	 */
-
-	Parser.prototype.parseDoc = function() {
-	  this.accept('doc')
-	  this.expect('indent', 'expected indent after document')
-	  var val = this.parse()
-	  this.expect('dedent', 'document not properly dedented')
-	  return val
-	}
-
-	/**
-	 *  ( id ':' - expr -
-	 *  | id ':' - indent expr dedent
-	 *  )+
-	 */
-
-	Parser.prototype.parseHash = function() {
-	  var id, hash = {}
-	  while (this.peekType('id') && (id = this.advanceValue())) {
-	    this.expect(':', 'expected semi-colon after id')
-	    this.ignoreSpace()
-	    if (this.accept('indent'))
-	      hash[id] = this.parse(),
-	      this.expect('dedent', 'hash not properly dedented')
-	    else
-	      hash[id] = this.parse()
-	    this.ignoreSpace()
-	  }
-	  return hash
-	}
-
-	/**
-	 * '{' (- ','? ws id ':' - expr ws)* '}'
-	 */
-
-	Parser.prototype.parseInlineHash = function() {
-	  var hash = {}, id, i = 0
-	  this.accept('{')
-	  while (!this.accept('}')) {
-	    this.ignoreSpace()
-	    if (i) this.expect(',', 'expected comma')
-	    this.ignoreWhitespace()
-	    if (this.peekType('id') && (id = this.advanceValue())) {
-	      this.expect(':', 'expected semi-colon after id')
-	      this.ignoreSpace()
-	      hash[id] = this.parse()
-	      this.ignoreWhitespace()
-	    }
-	    ++i
-	  }
-	  return hash
-	}
-
-	/**
-	 *  ( '-' - expr -
-	 *  | '-' - indent expr dedent
-	 *  )+
-	 */
-
-	Parser.prototype.parseList = function() {
-	  var list = []
-	  while (this.accept('-')) {
-	    this.ignoreSpace()
-	    if (this.accept('indent'))
-	      list.push(this.parse()),
-	      this.expect('dedent', 'list item not properly dedented')
-	    else
-	      list.push(this.parse())
-	    this.ignoreSpace()
-	  }
-	  return list
-	}
-
-	/**
-	 * '[' (- ','? - expr -)* ']'
-	 */
-
-	Parser.prototype.parseInlineList = function() {
-	  var list = [], i = 0
-	  this.accept('[')
-	  while (!this.accept(']')) {
-	    this.ignoreSpace()
-	    if (i) this.expect(',', 'expected comma')
-	    this.ignoreSpace()
-	    list.push(this.parse())
-	    this.ignoreSpace()
-	    ++i
-	  }
-	  return list
-	}
-
-	/**
-	 * yyyy-mm-dd hh:mm:ss
-	 *
-	 * For full format: http://yaml.org/type/timestamp.html
-	 */
-
-	Parser.prototype.parseTimestamp = function() {
-	  var token = this.advance()[1]
-	  var date = new Date
-	  var year = token[2]
-	    , month = token[3]
-	    , day = token[4]
-	    , hour = token[5] || 0 
-	    , min = token[6] || 0
-	    , sec = token[7] || 0
-
-	  date.setUTCFullYear(year, month-1, day)
-	  date.setUTCHours(hour)
-	  date.setUTCMinutes(min)
-	  date.setUTCSeconds(sec)
-	  date.setUTCMilliseconds(0)
-	  return date
-	}
-
-	/**
-	 * Evaluate a _str_ of yaml.
-	 *
-	 * @param  {string} str
-	 * @return {mixed}
-	 * @api public
-	 */
-
-	exports.eval = function(str) {
-	  return (new Parser(exports.tokenize(str))).parse()
-	}
-	});
-
-	var yaml$1 = (yaml && typeof yaml === 'object' && 'default' in yaml ? yaml['default'] : yaml);
-
 	/**
 	 * parse markdown content and return html
 	 */
 	function parse(content) {
-	  const markdownit = new MarkdownIt({
-	    html: true
-	  });
-	  const html = content.split(/\n\-{3,}\s*\n/m).map(md => {
+	  const slides = content.split(/\n\-{3,}\s*\n/m).map(md => {
 	    //extract meta
 	    const matched = /^(\w+:[^\n]+\n)+/.exec(md);
 	    const metaText = matched ? matched[0] : '';
-	    const meta = metaText ? yaml$1.eval(metaText) : {};
-	    const html = markdownit.render(md.substr(metaText.length));
-	    return generateSlide(html, meta);
-	  }).join('\n');
-	  return {html};
+	    const meta = metaText ? parseMeta(metaText) : {};
+	    const markdown = md.substr(metaText.length);
+	    const html = renderSlide(markdown);
+	    return {meta, html, markdown};
+	  });
+	  let option = {};
+	  if (!slides[0].markdown.trim()) { //first meta as slides option
+	    option = slides[0].meta;
+	    slides.splice(0, 1);
+	  }
+	  const html  = slides.map(slide => slide.html).join('');
+	  const metas = slides.map(slide => slide.meta);
+	  return {html, option, metas};
 	}
 
 	/**
-	 * generate slide html from content and meta object
+	 * render slide
 	 */
-	function generateSlide(contentHtml, meta) {
+	const renderSlide = md => {
+	  const markdownit = new MarkdownIt({html: true});
+	  const html = markdownit.render(md);
 	  return `<section class="diapo-slide">
-            <div class="diapo-content">${contentHtml}</div>
+            <div class="diapo-content">${html}</div>
           </section>`;
-	}
+	};
+
+	/**
+	 * parse yaml
+	 */
+	const parseMeta = text => text.trim().split('\n').map(l => l.split(/\s*:\s*(.*)?/)).reduce((meta, arr) => {
+	  meta[arr[0]] = arr[1];
+	  return meta;
+	}, {});
 
 	var prism = createCommonjsModule(function (module) {
 	/* **********************************************
@@ -8977,10 +8598,11 @@
 	 */
 	const fontZoom = {
 	  beforeParse(diapo) {
-	    const pattern1 = /(\s+)<<(\++)(?=\s+)/mg;
-	    const pattern2 = /(\s+)\++>>(?=\s+)/mg;
+	    const pattern1 = /(\s+)<<(\++|\-+)(?=\s+)/mg,
+	          pattern2 = /(\s+)(\++|\-+)>>(?=\s+)/mg;
 	    diapo.content = diapo.content.replace(pattern1, (m, g1, g2) => {
-	      const zoom = Math.ceil(Math.pow(1.2, g2.length) * 100);
+	      const factor = g2[0] == '+' ? 1.2 : 0.8;
+	      const zoom = Math.ceil(Math.pow(factor, g2.length) * 100);
 	      return `${g1}<span style="font-size: ${zoom}%">`;
 	    }).replace(pattern2, '$1</span>');
 	  }
@@ -8991,8 +8613,8 @@
 	 */
 	const twoColumn = {
 	  beforeParse(diapo) {
-	    const pattern1 = /<<\|-\|-\|/g;
-	    const pattern2 = /\|>>(?=\s+)/mg;
+	    const pattern1 = /<<\|-\|-\|/g,
+	          pattern2 = /\|>>(?=\s+)/mg;
 	    diapo.content = diapo.content.replace(pattern1, '<span class="two-column">')
 	      .replace(pattern2, '</span>');
 	  }
@@ -9003,8 +8625,8 @@
 	 */
 	const iframe = {
 	  beforeParse(diapo) {
-	    const pattern = /iframe\(([^\)]+)\)/ig;
-	    const template = '<iframe frameborder="0" $1></iframe>';
+	    const pattern = /iframe\(([^\)]+)\)/ig,
+	          template = '<iframe frameborder="0" $1></iframe>';
 	    diapo.content = diapo.content.replace(pattern, template);
 	  }
 	};
@@ -9024,6 +8646,183 @@
 	  }
 	};
 
+	/**
+	 * themes
+	 */
+	const themes = {
+	  afterRender(diapo) {
+	    const theme = diapo.option.theme || 'default',
+	          mainCSS = document.querySelector('link[href$="diapo.css"]'),
+	          path = `${mainCSS.href.replace(/[^\/]+$/, '')}/themes/${theme}.css`,
+	          link = document.createElement('link');
+	    link.rel = 'stylesheet';
+	    link.href = path;
+	    link.onerror = e => {
+	      alert(`Failed to load style for theme "${theme}"`);
+	    };
+	    document.head.appendChild(link);
+	  }
+	};
+
+	/**
+	 * transitions
+	 */
+	const transitions = {
+	  afterRender(diapo) {
+	    const transition = diapo.option.transition || 'default';
+	    diapo.container.classList.add(`transition-${transition}`);
+	  }
+	};
+
+	/**
+	 * touch screen support
+	 */
+	const touch = {
+	  afterRender(diapo) {
+	    if (!'ontouchstart' in window) return;
+	    let startX, startTime, endX;
+	    const ontouchstart = e => {
+	      startX = e.touches[0].pageX;
+	      startTime = +new Date();
+	      window.addEventListener('touchmove', ontouchmove);
+	    };
+	    const ontouchmove = e => {
+	      endX = e.touches[0].pageX;
+	    };
+	    const ontouchend = e => {
+	      window.removeEventListener('touchmove', ontouchmove);
+	      const duration = +new Date() - startTime;
+	      const distance = endX - startX;
+	      if (Math.abs(distance) > 30 && duration < 800) {
+	        this.transition(distance > 0 ? 'prev' : 'next');
+	      }
+	    };
+	    window.addEventListener('touchstart', ontouchstart);
+	    window.addEventListener('touchend', ontouchend);
+	    window.addEventListener('touchcancel', ontouchend);
+	  }
+	};
+
+	/**
+	 * style
+	 */
+	const style = {
+	  afterRender(diapo) {
+	    diapo.slides.forEach((slide, index) => {
+	      const cssText = diapo.metas[index].style;
+	      cssText && (slide.style.cssText += cssText);
+	    });
+	  }
+	};
+
+	/**
+	 * fragment
+	 */
+	const fragment = {
+	  afterRender(diapo) {
+	    diapo.slides.forEach((slide, index) => {
+	      if (!diapo.metas[index].fragment) return;
+	      const selector = `
+        .diapo-content > ul > li,
+        .diapp-content > ol > li,
+        .diapo-content > p,
+        .diapo-content > blockquote,
+        .diapo-content > pre
+      `;
+	      const items = Array.from(slide.querySelectorAll(selector));
+	      items.forEach(item => item.classList.add('fragment'));
+	    });
+	  },
+	  beforeTransition(diapo, dir) {
+	    const slide = diapo.slides[diapo.current],
+	          fragments = Array.from(slide.querySelectorAll('.fragment')),
+	          toStatus = dir === 'next' ? 'visible' : 'hidden',
+	          remains = fragments.filter(f => f.style.visibility != toStatus);
+	    if (!remains.length) return;
+	    remains[dir === 'next' ? 'shift' : 'pop']().style.visibility = toStatus;
+	    return false;
+	  }
+	};
+
+
+	/**
+	 * speech
+	 */
+	const speech = {
+	  afterRender(diapo) {
+	    diapo.slides.forEach((slide, index) => {
+	      const speech = diapo.metas[index].speech;
+	      if (!speech) return;
+	      const audio = document.createElement('audio');
+	      audio.className = 'speech';
+	      audio.preload = true;
+	      audio.src = speech;
+	      slide.appendChild(audio);
+	    });
+	  },
+	  afterTransition(diapo) {
+	    const speech = diapo.metas[diapo.current].speech;
+	    Array.from(document.querySelectorAll('.speech')).forEach(a => a.pause());
+	    if (!speech) return;
+	    const audio = diapo.container.querySelector('.speech');
+	    audio.currentTime = 0;
+	    audio.play();
+	  }
+	};
+
+
+	/**
+	 * background image
+	 */
+	const backgroundImage = {
+	  afterRender(diapo) {
+	    diapo.slides.forEach((slide, index) => {
+	      const image = diapo.metas[index].bgimage;
+	      if (!image) return;
+	      slide.style.cssText += `
+        background: url(${image}) no-repeat center center;
+        background-size: cover;
+      `;
+	    });
+	  }
+	};
+
+	/**
+	 * background color
+	 */
+	const backgroundColor = {
+	  afterRender(diapo) {
+	    diapo.slides.forEach((slide, index) => {
+	      const color = diapo.metas[index].bgcolor;
+	      const namedColors = {
+	        red: '#F44336',
+	        pink: '#E91E63',
+	        purple: '#9C27B0',
+	        deeppurple: '#673AB7',
+	        indigo: '#3F51B5',
+	        blue: '#2196F3',
+	        lightblue: '#03A9F4',
+	        cyan: '#00BCD4',
+	        teal: '#009688',
+	        green: '#4CAF50',
+	        lightgreen: '#8BC34A',
+	        lime: '#CDDC39',
+	        yellow: '#FFEB3B',
+	        amber: '#FFC107',
+	        orange: '#FF9800',
+	        deeporange: '#FF5722',
+	        brown: '#795548',
+	        grey: '#9E9E9E',
+	        bluegrey: '#607D8B'
+	      };
+	      if (!color) return;
+	      slide.style.cssText += `
+        background-color: ${namedColors[color]||color}
+      `;
+	    });
+	  }
+	};
+
 
 
 	var plugins = Object.freeze({
@@ -9033,10 +8832,19 @@
 	  fontZoom: fontZoom,
 	  twoColumn: twoColumn,
 	  iframe: iframe,
-	  progress: progress
+	  progress: progress,
+	  themes: themes,
+	  transitions: transitions,
+	  touch: touch,
+	  style: style,
+	  fragment: fragment,
+	  speech: speech,
+	  backgroundImage: backgroundImage,
+	  backgroundColor: backgroundColor
 	});
 
 	const classNames = ['prev', 'current', 'next'];
+	const userPlugins = {};
 
 	class Diapo {
 
@@ -9053,7 +8861,7 @@
 
 	    // parse
 	    this.runPlugin('beforeParse');
-	    this.parse();
+	    Object.assign(this, parse(this.content));
 	    this.runPlugin('afterParse');
 
 	    // render
@@ -9072,13 +8880,6 @@
 	  initContainer(el) {
 	    this.container = $(el || 'body');
 	    this.container.classList.add('diapo-container');
-	  }
-
-	  /**
-	   * parse markdown to html
-	   */
-	  parse() {
-	    this.html = parse(this.content).html;
 	  }
 
 	  /**
@@ -9101,37 +8902,24 @@
 	    };
 	    window.addEventListener('keyup', e => {
 	      const action = actions[e.key];
-	      action && this[action]() && e.preventDefault();
+	      action && this.transition(action) && e.preventDefault();
 	    });
-	    // touch screen support
-	    if ('ontouchstart' in window) {
-	      let startX, startTime, endX;
-	      const ontouchstart = e => {
-	        startX = e.touches[0].pageX;
-	        startTime = +new Date();
-	        window.addEventListener('touchmove', ontouchmove);
-	      };
-	      const ontouchmove = e => {
-	        endX = e.touches[0].pageX;
-	      };
-	      const ontouchend = e => {
-	        window.removeEventListener('touchmove', ontouchmove);
-	        const duration = +new Date() - startTime;
-	        const distance = endX - startX;
-	        if (Math.abs(distance) > 30 && duration < 800) {
-	          this[distance > 0 ? 'prev' : 'next']();
-	        }
-	      };
-	      window.addEventListener('touchstart', ontouchstart);
-	      window.addEventListener('touchend', ontouchend);
-	      window.addEventListener('touchcancel', ontouchend);
-	    }
+	  }
+
+	  /**
+	   * transition to next/prev page
+	   */
+	  transition(dir) {
+	    const result = this.runPlugin('beforeTransition', dir);
+	    if (result.filter(r => r === false).length) return;
+	    this[dir]();
 	  }
 
 	  /**
 	   * get plugins
 	   */
 	  getPlugins() {
+	    Object.assign(plugins, userPlugins);
 	    return Object.keys(plugins).map(name => {
 	      plugins[name].name = name;
 	      return plugins[name];
@@ -9142,9 +8930,9 @@
 	   * run plugins at specified phase
 	   * @param phase (beforeParse|afterParse|afterRender)
 	   */
-	  runPlugin(phase) {
-	    this.plugins.forEach(p => {
-	      typeof p[phase] === 'function' &&p[phase].call(this, this);
+	  runPlugin(phase, ...params) {
+	    return this.plugins.map(p => {
+	      if (typeof p[phase] === 'function') return p[phase].call(this, this, ...params);
 	    });
 	  }
 
@@ -9163,7 +8951,8 @@
 	  /**
 	   * add plugin
 	   */
-	  static addPlugin(plugin) {
+	  static addPlugin(name, plugin) {
+	    userPlugins[name] = plugin;
 	  }
 
 	  /**
@@ -9199,6 +8988,9 @@
 	    });
 	    this.current = index;
 	    requestAnimationFrame(f => {
+	      [document.body, document.documentElement].forEach(e => {
+	        e.scrollTop && (e.scrollTop = 0);
+	      });
 	      this.runPlugin('afterTransition');
 	    });
 	  }

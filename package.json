@@ -4,10 +4,12 @@
   "description": "Diapo - The HTML5 Presentation Framework.",
   "main": "dist/diapo.js",
   "scripts": {
-    "test": "python -m SimpleHTTPServer",
+    "test": "http-server -p 8000",
     "watch": "npm run  rollup & npm run postcss",
     "rollup": "rollup -c -w",
-    "postcss": "postcss -u postcss-import -u postcss-cssnext -u postcss-custom-selectors -o dist/diapo.css src/styles/main.css -w"
+    "postcss": "npm run  postcss-main & npm run postcss-theme",
+    "postcss-main": "postcss -u postcss-import -u postcss-cssnext -o dist/diapo.css src/styles/main.css -w",
+    "postcss-theme": "postcss -u postcss-import -u postcss-cssnext -d dist/themes src/styles/themes/!\\(base\\).css -w"
   },
   "repository": {
     "type": "git",
@@ -21,8 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "markdown-it": "^6.1.0",
-    "prismjs": "^1.5.1",
-    "yaml": "^0.3.0"
+    "prismjs": "^1.5.1"
   },
   "devDependencies": {
     "http-server": "^0.9.0",
@@ -31,12 +32,10 @@
     "postcss-cssnext": "^2.6.0",
     "postcss-custom-selectors": "^3.0.0",
     "postcss-import": "^8.1.2",
-    "postcss-namespace": "^1.1.1",
     "rollup": "^0.32.0",
     "rollup-plugin-commonjs": "^3.0.0",
     "rollup-plugin-node-resolve": "^1.7.0",
     "rollup-plugin-postcss": "^0.1.1",
-    "rollup-watch": "^2.4.0",
-    "serve-static": "^1.11.1"
+    "rollup-watch": "^2.4.0"
   }
 }

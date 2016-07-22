@@ -1,0 +1,38 @@
+.transition-default {
+  & .diapo-slide.current {
+    display: flex;
+  }
+}
+
+.transition-slide {
+  & .diapo-slide {
+    opacity: 0;
+    &.prev, &.current, &.next {
+      display: flex;
+    }
+    &.prev {
+      transform: translate3d(-100%, 0, 0);
+    }
+    &.current {
+      opacity: 1;
+    }
+    &.next {
+      transform: translate3d(100%, 0, 0);
+    }
+  }
+}
+
+.transition-fade {
+  & .diapo-slide {
+    opacity: 0;
+    &.prev, &.current, &.next {
+      display: flex;
+    }
+    &.current {
+      opacity: 1;
+    }
+    &.next {
+      pointer-events: none;
+    }
+  }
+}
