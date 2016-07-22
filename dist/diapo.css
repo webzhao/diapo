@@ -548,6 +548,8 @@ html {
 }
 .transition-slide .diapo-slide {
   opacity: 0;
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
 }
 .transition-slide .diapo-slide.prev, .transition-slide .diapo-slide.current, .transition-slide .diapo-slide.next {
   display: -webkit-box;
