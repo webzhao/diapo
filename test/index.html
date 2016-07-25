@@ -17,11 +17,15 @@
     <div id="diapo"></div>
     <script src="../dist/diapo.js"></script>
     <script>
-      const contentUrl = 'contents/sample-slides/introduction.md';
-      fetch(contentUrl).then(res => res.text()).then(md => new Diapo({
-        content: md,
-        el: '#diapo'
-      }));
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'contents/sample-slides/introduction.md');
+      xhr.onload = function() {
+        new Diapo({
+          content: this.responseText,
+          el: '#diapo'
+        })
+      };
+      xhr.send();
     </script>
   </body>
 </html>

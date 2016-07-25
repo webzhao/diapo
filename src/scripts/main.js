@@ -56,14 +56,17 @@ class Diapo {
    */
   bindEvents() {
     const actions = {
-      ArrowRight: 'next',
-      ArrowDown: 'next',
-      ArrowLeft: 'prev',
-      ArrowUp: 'prev'
+      37: 'prev', //arrow left
+      38: 'prev', //arrow up
+      39: 'next', //arrow right
+      40: 'next', //arrow down
+      32: 'next', //space
+      13: 'next'  //enter
     };
-    window.addEventListener('keyup', e => {
-      const action = actions[e.key];
-      action && this.transition(action) && e.preventDefault();
+    window.addEventListener('keydown', e => {
+      const action = actions[e.keyCode];
+      action && e.preventDefault();
+      action && this.transition(action);
     });
   }
 
