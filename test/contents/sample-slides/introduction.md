@@ -225,10 +225,10 @@ fragment: true
 
 ## Iframes
 
-iframe(src="http://example.com/" height="460" width="800")
+iframe(src="https://example.com/" height="460" width="800")
 
 <div style="font-family: monospace; margin: 1em 2em">
-iframe&#8203;(src="http://example.com/")
+iframe&#8203;(src="https://example.com/")
 </div>
 
 ---
