@@ -10,9 +10,9 @@ export function $(selector) {
 /**
  * get nodes by selector
  */
-export function $$(selector) {
+export function $$(selector, context=document) {
   return typeof selector === 'string'
-    ? Array.from(document.querySelectorAll(selector))
+    ? [].slice.call(context.querySelectorAll(selector))
     : selector;
 }
 
@@ -20,6 +20,11 @@ export function $$(selector) {
  * slice with padding
  */
 export function sliceWithPadding(arr, start=0, end=arr.length) {
-  return Array(end - start).fill(1).map((a, i) => arr[start + i] || null);
+  const ret = [];
+  while(start <= end) {
+    ret.push(arr[start] || null);
+    start++;
+  }
+  return ret;
 }
 

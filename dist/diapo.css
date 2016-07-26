@@ -315,11 +315,16 @@ textarea {
 }
 html {
   font-size: 1.11vw;
+  width: 100%;
+  overflow-x: hidden;
+  -ms-touch-action: pan-y;
+      touch-action: pan-y;
 }
 .diapo-container {
   overflow-x: hidden;
   position: relative;
-  height: 100vh
+  height: 100vh;
+  width: 100%
 }
 .diapo-container progress {
   position: fixed;

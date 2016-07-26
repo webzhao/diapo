@@ -18,7 +18,7 @@ class Diapo {
     this.current = 0;
     this.content = content;
     this.plugins = this.getPlugins();
-    this.initContainer();
+    this.initContainer(el);
 
     // parse
     this.runPlugin('beforeParse');

@@ -1,6 +1,7 @@
 "use strict";
 
 import Prism from 'prismjs';
+import { $$ } from './util';
 
 /**
  * syntax highlighter
@@ -120,11 +121,13 @@ export const touch = {
     if (!'ontouchstart' in window) return;
     let startX, startTime, endX;
     const ontouchstart = e => {
+      e.preventDefault();
       startX = e.touches[0].pageX;
       startTime = +new Date();
       window.addEventListener('touchmove', ontouchmove);
     };
     const ontouchmove = e => {
+      e.preventDefault();
       endX = e.touches[0].pageX;
     };
     const ontouchend = e => {
@@ -167,13 +170,13 @@ export const fragment = {
         .diapo-content > blockquote,
         .diapo-content > pre
       `;
-      const items = Array.from(slide.querySelectorAll(selector));
+      const items = $$(selector, slide);
       items.forEach(item => item.classList.add('fragment'));
     });
   },
   beforeTransition(diapo, dir) {
     const slide = diapo.slides[diapo.current],
-          fragments = Array.from(slide.querySelectorAll('.fragment')),
+          fragments = $$('.fragment', slide),
           toStatus = dir === 'next' ? 'visible' : 'hidden',
           remains = fragments.filter(f => f.style.visibility != toStatus);
     if (!remains.length) return;
@@ -200,7 +203,7 @@ export const speech = {
   },
   afterTransition(diapo) {
     const speech = diapo.metas[diapo.current].speech;
-    Array.from(document.querySelectorAll('.speech')).forEach(a => a.pause());
+    $$('.speech').forEach(a => a.pause());
     if (!speech) return;
     const audio = diapo.container.querySelector('.speech');
     audio.currentTime = 0;
