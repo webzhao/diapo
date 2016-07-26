@@ -152,7 +152,7 @@ class Diapo {
     });
     this.current = index;
     requestAnimationFrame(f => {
-      [document.body, document.documentElement].forEach(e => {
+      [document.body, document.documentElement, this.container].forEach(e => {
         e.scrollTop && (e.scrollTop = 0);
       });
       this.runPlugin('afterTransition');
