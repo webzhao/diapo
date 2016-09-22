@@ -4,6 +4,16 @@ import Prism from 'prismjs';
 import { $$ } from './util';
 
 /**
+ * page title
+ */
+export const pageTitle = {
+  afterRender(diapo) {
+    document.title = `🅿️ ${diapo.option.title||''}`;
+  }
+};
+
+
+/**
  * syntax highlighter
  */
 export const syntaxHighlighter = {
@@ -91,7 +101,7 @@ export const progress = {
 export const themes = {
   afterRender(diapo) {
     const theme = diapo.option.theme || 'default',
-          mainCSS = document.querySelector('link[href$="diapo.css"]'),
+          mainCSS = document.querySelector('link[href*="diapo.css"]'),
           path = `${mainCSS.href.replace(/[^\/]+$/, '')}/themes/${theme}.css`,
           link = document.createElement('link');
     link.rel = 'stylesheet';
